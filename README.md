@@ -1,8 +1,11 @@
 # Auto Troy
-Auto Troy automates the USC TrojanCheck for a compliant student. What started out as a distraction activity to do at Starbucks at 6:30am after a sleepless night turned into a built out project. View this Medium article(in progress) to see how this whole thing works.
+Auto Troy automates the USC TrojanCheck for a compliant student. What started out as a distraction activity to do at Starbucks at 6:30am after a sleepless night turned into a built out project. View this Medium article(in progress) to see how this whole thing works. 
 
 ## Forewarning!!!
-Using the code means that you are compliant with USC's Covid policies and you do not have COVID-19. I published this repo in hopes that other compliant people will benefit from this and will enable them to be one step closer to a day without worrying about Covid and Covid protocols. 
+Using the code means that you are compliant with USC's Covid policies and you do not have COVID-19. I published this repo in hopes that other compliant people will benefit from this and will enable them to be one step closer to a day without worrying about Covid and Covid protocols. Additionally this program works with Google Chrome only!
+
+## Tl:dr
+Get Google Credentials --> remove 2 dummy files --> run dependencies script --> run auto troy automatically (python scheduler.py)
 
 ## Get Google Gmail API Credentials
 The credentials.json file must be generated from the https://console.cloud.google.com/. Search for the Gmail API and enable it. Then go to Credentials and created an OAuth 2.0 Client IDs credential. Download the file and rename to credentials.json and move it into the project folder. When send_day_pass() is run, the credential process will automatically run to get the necessary token values to be able to send an email.
@@ -21,14 +24,12 @@ Setup.py handles all of the setup code from obtaining the login credentials to r
 run_everything()
 ``` 
 ## 3. Running program
-* Manually run Auto Troy:
-```python
- python web_scraper.py
-```
 * Schedule when to run Auto Troy:
 ```python
- python schedule_date.py
+ python scheduler.py
 ```
+If you do not want the smartwatch capable QR code, set `to_watch=False`. If you do not have 2 Factor Authentication set up, set `two_FA_enabled=False`.  
+
   _Default scheduled to run at 12:59am and needs to be running at scheduled time to work_
 
 To change when the program runs, look at line 10 in schedule_date.py (shown below) and write in your preferred time (24 hour period).
@@ -37,6 +38,16 @@ To change when the program runs, look at line 10 in schedule_date.py (shown belo
      run_everything()
      time.sleep(65)
 ```
+* Manually run Auto Troy:
+```python
+ python web_scraper.py
+```
+## Two Factor Authentication (2FA)
+Auto Troy now supports 2FA! If `two_FA_enabled=True` in scheduler.py, just send yourself an email with the subject line "[RUN AUTO TROY]" and wait 1-2 minutes to get 2FA notification. The program waits for a minutes before running the rest of the program normally. For added security, the program sends a queried response to the GMail API asking specifically for emails with the subject line "[RUN AUTO TROY]" and can only see emails that matches this query. 
+
+## Handling of login credentials 
+The login credentials are hashed before they are stored. While the credentials are only stored locally, hashing it provides an added security layer. Furthermore, adding in the credentials to the environmental variables is a good idea. **This does not mean that this program or author is responsible if this information is leaked!** 
+
 ## Sending emails
 send_email.py handles commands to send an email. The send_day_pass() is run by web_scraper.py once the screenshot(s) have been recorded: 
 ```python
@@ -51,10 +62,7 @@ def send_day_pass(filepaths, email_address, to_watch):
 ```
 To change the email address, change second argument of send_day_pass() on line 142 and line 12 on setup.py to your preferred email. By default, it uses the @usc.edu email address. Additionally, if you do not have an Apple Watch/don't need solely the QR code, set to_watch to False. 
 
-## Handling of login credentials 
-The login credentials are hashed before they are stored. While the credentials are only stored locally, hashing it provides an added security layer. Furthermore, adding in the credentials to the environmental variables is a good idea. **This does not mean that this program or author is responsible if this information is leaked!** 
 
 ## Things in process
 * Timeout Error: Currently, if webdriver is unable to open Chrome, the program falls into an infinite loop. This problem is being investigated further (debugging to see if the error is capturable in order to force a reboot of webdriver. 
-
-* Two Factor Authentication (2FA) support: This program assumes that after logging in, the questionaire page comes up. There is a solution that allows for the program to click on the 2FA buttons but would require the user to be able to accept login (especially an issue if program is set up to run in the middle of the night). 2FA provider does have Python API support.
+* Browser support: The program can only run on Chrome. If demand exists, Firefox and Chromium might be added in the future. 
